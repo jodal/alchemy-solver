@@ -3,62 +3,36 @@
 from lxml.etree import fromstring
 import pygraphviz
 
-class Element(object):
-    def __init__(self, name):
-        self.name = name
-        self.made_of = []
-        self.part_of = []
+class Solution(object):
+    def __init__(self):
+        self.graph = pygraphviz.AGraph(directed=True)
+        self.id_to_name = {}
 
-    def __str__(self):
-        return self.name
+    def add_elements(self, filename):
+        with open(filename) as filehandle:
+            xml = filehandle.read()
+        for entry in fromstring(xml).xpath('//entry'):
+            self.graph.add_node(entry.text,
+                color='lightblue2', style='filled')
+            self.id_to_name[entry.attrib['id']] = entry.text
 
-    def add_parents(self, a, b):
-        self.made_of.append((a, b))
-        a.part_of.append(self)
-        b.part_of.append(self)
-
-    def get_part_of_pairs(self):
-        result = []
-        for child in self.part_of:
-            for parents in child.made_of:
-                if self in parents:
-                    result.append((parents, child))
-        return result
-
-def get_elements():
-    with open('en_us.xml') as f:
-        elements = {}
-        for e in fromstring(f.read()).xpath('//entry'):
-            elements[e.attrib['id']] = Element(e.text)
-        return elements
-
-def add_relations(elements):
-    with open('library.xml') as f:
-        entries = fromstring(f.read()).xpath('//entry')
-        for entry in entries:
-            element = elements[entry.attrib['id']]
+    def add_relations(self, filename):
+        with open(filename) as filehandle:
+            xml = filehandle.read()
+        for entry in fromstring(xml).xpath('//entry'):
+            child = self.id_to_name[entry.attrib['id']]
             for parents in entry.findall('parents'):
-                pair = []
-                for parent in parents.findall('parent'):
-                    pair.append(elements[parent.attrib['id']])
-                element.add_parents(*pair)
+                parents = [self.id_to_name[p.attrib['id']] for p in parents]
+                combination = ' + '.join(parents)
+                for parent in parents:
+                    self.graph.add_edge(parent, combination)
+                self.graph.add_edge(combination, child)
 
-def get_full_solution_as_digraph(elements):
-    graph = pygraphviz.AGraph(directed=True)
-    graph.add_nodes_from([e.name for e in elements.values()],
-        color='lightblue2', style='filled')
-    for product in elements.values():
-        for (factor_a, factor_b) in product.made_of:
-            combination = '%s + %s' % (factor_a, factor_b)
-            graph.add_edge(factor_a, combination)
-            graph.add_edge(factor_b, combination)
-            graph.add_edge(combination, product)
-    return graph
-
-def save_graph(graph, filename):
-    graph.draw(filename, prog='dot')
+    def save_graph(self, filename):
+        self.graph.draw(filename, prog='dot')
 
 if __name__ == '__main__':
-    elements = get_elements()
-    add_relations(elements)
-    save_graph(get_full_solution_as_digraph(elements), 'full_solution.png')
+    solution = Solution()
+    solution.add_elements('en_us.xml')
+    solution.add_relations('library.xml')
+    solution.save_graph('full_solution.png')
