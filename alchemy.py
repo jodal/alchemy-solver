@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 
 from lxml.etree import fromstring
-from pprint import pprint
 
 class Element(object):
     def __init__(self, name):
@@ -42,14 +41,6 @@ def add_relations(elements):
                 for parent in parents.findall('parent'):
                     pair.append(elements[parent.attrib['id']])
                 element.add_parents(*pair)
-
-def print_as_text(elements):
-    for element in elements.values():
-        print '--- %s' % element.name
-        for (a, b) in element.made_of:
-            print '< %s + %s => %s' % (a.name, b.name, element.name)
-        for ((a, b), child) in element.get_part_of_pairs():
-            print '> %s + %s => %s' % (a.name, b.name, child.name)
 
 def print_as_digraph(elements):
     print 'digraph G {'
