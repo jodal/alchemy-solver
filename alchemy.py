@@ -61,20 +61,21 @@ class Solution(object):
             nodes_to_visit.extend(self.graph.predecessors(child))
         return self.graph.subgraph(nbunch=nodes)
 
-if __name__ == '__main__':
-    solution = Solution()
-    solution.add_elements('input/en_us.xml')
-    solution.add_relations('input/library.xml')
+    def process_command(self, command):
+        if command == 'full':
+            self.save_graph()
+        elif command == 'all':
+            self.save_graph()
+            for element in self.get_elements():
+                self.save_graph(element=element)
+        else:
+            self.save_graph(element=command)
 
+if __name__ == '__main__':
     if len(sys.argv) != 2:
         sys.exit('Usage: %s ( full | all | ELEMENT )' % sys.argv[0])
 
-    command = sys.argv[1]
-    if command == 'full':
-        solution.save_graph()
-    elif command == 'all':
-        solution.save_graph()
-        for element in solution.get_elements():
-            solution.save_graph(element=element)
-    else:
-        solution.save_graph(element=command)
+    solution = Solution()
+    solution.add_elements('input/en_us.xml')
+    solution.add_relations('input/library.xml')
+    solution.process_command(sys.argv[1])
