@@ -13,16 +13,16 @@ The program requires Python, python-lxml, and python-pygraphviz to run.
 
 To create a PNG file showing the complete solution of the game::
 
-    python alchemy.py full
+    python alchemy-solver.py --full
 
 To create a PNG file showing the solution of a single element, provide the
 element name, e.g. ``isle``::
 
-    python alchemy.py isle
+    python alchemy-solver.py isle
 
 To create PNG files for both the full solution and all elements::
 
-    python alchemy.py all
+    python alchemy-solver.py --all
 
 
 License
