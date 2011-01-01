@@ -58,13 +58,13 @@ if __name__ == '__main__':
     solution.add_relations('input/library.xml')
 
     if len(sys.argv) == 2 and sys.argv[1] == 'full':
-        solution.save_graph('full_solution.png')
+        solution.save_graph('solutions/FULL.png')
     elif len(sys.argv) == 2 and sys.argv[1] == 'all':
-        solution.save_graph('full_solution.png')
+        solution.save_graph('solutions/FULL.png')
         for element in solution.get_elements():
-            solution.save_graph('%s_solution.png' % element, child=element)
+            solution.save_graph('solutions/%s.png' % element, child=element)
     elif len(sys.argv) == 2:
         element = sys.argv[1]
-        solution.save_graph('%s_solution.png' % element, child=element)
+        solution.save_graph('solutions/%s.png' % element, child=element)
     else:
         print 'Usage: %s ( full | all | ELEMENT )' % sys.argv[0]
