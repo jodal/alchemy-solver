@@ -29,7 +29,8 @@ class Solution(object):
                     self.graph.add_edge(parent, combination)
                 self.graph.add_edge(combination, child)
 
-    def get_elements(self):
+    @property
+    def elements(self):
         return self.id_to_name.values()
 
     def save_graph(self, element=None):
@@ -66,7 +67,7 @@ class Solution(object):
             self.save_graph()
         elif command == 'all':
             self.save_graph()
-            for element in self.get_elements():
+            for element in self.elements:
                 self.save_graph(element=element)
         else:
             self.save_graph(element=command)
