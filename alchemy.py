@@ -63,9 +63,9 @@ class Solution(object):
         return self.graph.subgraph(nbunch=nodes)
 
     def process_command(self, command):
-        if command == 'full':
+        if command == '--full':
             self.save_graph()
-        elif command == 'all':
+        elif command == '--all':
             self.save_graph()
             for element in self.elements:
                 self.save_graph(element=element)
@@ -74,7 +74,7 @@ class Solution(object):
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        sys.exit('Usage: %s ( full | all | ELEMENT )' % sys.argv[0])
+        sys.exit('Usage: %s ( --full | --all | ELEMENT )' % sys.argv[0])
 
     solution = Solution()
     solution.add_elements('input/en_us.xml')
