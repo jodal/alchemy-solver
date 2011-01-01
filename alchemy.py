@@ -51,7 +51,7 @@ class Solution(object):
         try:
             child = self.graph.get_node(element)
         except KeyError:
-            sys.exit('Element "%s" not found' % child)
+            sys.exit('Element "%s" not found' % element)
         nodes = []
         nodes_to_visit = [child]
         while nodes_to_visit:
