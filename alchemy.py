@@ -40,8 +40,11 @@ class Solution(object):
             filename = 'solutions/%s.png' % (
                 element.replace(' ', '_').replace('!', ''))
             graph = self.get_predecessor_graph(element)
+            graph.get_node(element).attr['color'] = 'green'
         graph.draw(filename, prog='dot')
         print '%s generated' % filename
+        if element is not None:
+            graph.get_node(element).attr['color'] = 'lightblue2'
 
     def get_predecessor_graph(self, element):
         try:
