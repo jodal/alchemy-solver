@@ -5,12 +5,24 @@ This is a game solver for the Alchemy game found in the Chrome Web Store or at
 http://alchemy.l8r.pl/. Using this program is called cheating, though it was
 fun to make the solver.
 
-The program requires Python, PyGraphviz, and Graphviz to run.
 
-Run it without any arguments to create a PNG file showing the complete solution
-of the game::
+Usage
+-----
 
-    python alchemy.py
+The program requires Python, python-lxml, and python-pygraphviz to run.
+
+To create a PNG file showing the complete solution of the game::
+
+    python alchemy.py full
+
+To create a PNG file showing the solution of a single element, provide the
+element name, e.g. ``isle``::
+
+    python alchemy.py isle
+
+To create PNG files for both the full solution and all elements::
+
+    python alchemy.py all
 
 
 License
