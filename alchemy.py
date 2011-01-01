@@ -39,21 +39,24 @@ class Solution(object):
         else:
             filename = 'solutions/%s.png' % (
                 element.replace(' ', '_').replace('!', ''))
-            try:
-                child = self.graph.get_node(element)
-            except KeyError:
-                sys.exit('Element "%s" not found' % child)
-            nodes = []
-            nodes_to_visit = [child]
-            while nodes_to_visit:
-                child = nodes_to_visit.pop(0)
-                if child in nodes:
-                    continue
-                nodes.append(child)
-                nodes_to_visit.extend(self.graph.predecessors(child))
-            graph = self.graph.subgraph(nbunch=nodes)
+            graph = self.get_predecessor_graph(element)
         graph.draw(filename, prog='dot')
         print '%s generated' % filename
+
+    def get_predecessor_graph(self, element):
+        try:
+            child = self.graph.get_node(element)
+        except KeyError:
+            sys.exit('Element "%s" not found' % child)
+        nodes = []
+        nodes_to_visit = [child]
+        while nodes_to_visit:
+            child = nodes_to_visit.pop(0)
+            if child in nodes:
+                continue
+            nodes.append(child)
+            nodes_to_visit.extend(self.graph.predecessors(child))
+        return self.graph.subgraph(nbunch=nodes)
 
 if __name__ == '__main__':
     solution = Solution()
