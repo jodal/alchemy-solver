@@ -54,8 +54,8 @@ class Solution(object):
 
 if __name__ == '__main__':
     solution = Solution()
-    solution.add_elements('en_us.xml')
-    solution.add_relations('library.xml')
+    solution.add_elements('input/en_us.xml')
+    solution.add_relations('input/library.xml')
 
     if len(sys.argv) == 2 and sys.argv[1] == 'full':
         solution.save_graph('full_solution.png')
