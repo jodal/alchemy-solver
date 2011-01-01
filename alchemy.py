@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 from lxml.etree import fromstring
+import pygraphviz
 
 class Element(object):
     def __init__(self, name):
@@ -42,17 +43,19 @@ def add_relations(elements):
                     pair.append(elements[parent.attrib['id']])
                 element.add_parents(*pair)
 
-def print_as_digraph(elements):
-    print 'digraph G {'
-    for element in elements.values():
-        for (a, b) in element.made_of:
-            print '  "%s + %s" [color=lightblue2, style=filled];' % (a, b)
-            print '  "%s" -> "%s + %s";' % (a, a, b)
-            print '  "%s" -> "%s + %s";' % (b, a, b)
-            print '  "%s + %s" -> "%s";' % (a, b, element)
-    print '}'
+def get_full_solution_as_digraph(elements):
+    graph = pygraphviz.AGraph(name='full_solution', directed=True)
+    graph.add_nodes_from([e.name for e in elements.values()],
+        color='lightblue2', style='filled')
+    for product in elements.values():
+        for (factor_a, factor_b) in product.made_of:
+            combination = '%s + %s' % (factor_a, factor_b)
+            graph.add_edge(factor_a, combination)
+            graph.add_edge(factor_b, combination)
+            graph.add_edge(combination, product)
+    return graph
 
 if __name__ == '__main__':
     elements = get_elements()
     add_relations(elements)
-    print_as_digraph(elements)
+    print get_full_solution_as_digraph(elements).to_string()
