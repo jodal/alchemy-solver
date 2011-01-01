@@ -44,7 +44,7 @@ def add_relations(elements):
                 element.add_parents(*pair)
 
 def get_full_solution_as_digraph(elements):
-    graph = pygraphviz.AGraph(name='full_solution', directed=True)
+    graph = pygraphviz.AGraph(directed=True)
     graph.add_nodes_from([e.name for e in elements.values()],
         color='lightblue2', style='filled')
     for product in elements.values():
@@ -55,7 +55,10 @@ def get_full_solution_as_digraph(elements):
             graph.add_edge(combination, product)
     return graph
 
+def save_graph(graph, filename):
+    graph.draw(filename, prog='dot')
+
 if __name__ == '__main__':
     elements = get_elements()
     add_relations(elements)
-    print get_full_solution_as_digraph(elements).to_string()
+    save_graph(get_full_solution_as_digraph(elements), 'full_solution.png')

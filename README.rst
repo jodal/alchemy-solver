@@ -5,12 +5,12 @@ This is a game solver for the Alchemy game found in the Chrome Web Store or at
 http://alchemy.l8r.pl/. Using this program is called cheating, though it was
 fun to make the solver.
 
-The program requires Python and Graphviz to run.
+The program requires Python, PyGraphviz, and Graphviz to run.
 
 Run it without any arguments to create a PNG file showing the complete solution
 of the game::
 
-    ./alchemy.sh
+    python alchemy.py
 
 
 License
