@@ -32,12 +32,15 @@ class Solution(object):
     def get_elements(self):
         return self.id_to_name.values()
 
-    def save_graph(self, filename, child=None):
-        if child is None:
+    def save_graph(self, element=None):
+        if element is None:
+            filename = 'solutions/FULL.png'
             graph = self.graph
         else:
+            filename = 'solutions/%s.png' % (
+                element.replace(' ', '_').replace('!', ''))
             try:
-                child = self.graph.get_node(child)
+                child = self.graph.get_node(element)
             except KeyError:
                 sys.exit('Element "%s" not found' % child)
             nodes = []
@@ -57,14 +60,15 @@ if __name__ == '__main__':
     solution.add_elements('input/en_us.xml')
     solution.add_relations('input/library.xml')
 
-    if len(sys.argv) == 2 and sys.argv[1] == 'full':
-        solution.save_graph('solutions/FULL.png')
-    elif len(sys.argv) == 2 and sys.argv[1] == 'all':
-        solution.save_graph('solutions/FULL.png')
+    if len(sys.argv) != 2:
+        sys.exit('Usage: %s ( full | all | ELEMENT )' % sys.argv[0])
+
+    command = sys.argv[1]
+    if command == 'full':
+        solution.save_graph()
+    elif command == 'all':
+        solution.save_graph()
         for element in solution.get_elements():
-            solution.save_graph('solutions/%s.png' % element, child=element)
-    elif len(sys.argv) == 2:
-        element = sys.argv[1]
-        solution.save_graph('solutions/%s.png' % element, child=element)
+            solution.save_graph(element=element)
     else:
-        print 'Usage: %s ( full | all | ELEMENT )' % sys.argv[0]
+        solution.save_graph(element=command)
