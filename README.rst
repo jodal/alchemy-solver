@@ -24,6 +24,14 @@ To create PNG files for both the full solution and all elements::
 
     python alchemy-solver.py --all
 
+To create a PNG file showing what can be created given a single element::
+
+    python alchemy-solver.py --from wood
+
+The ``--from`` option, contributed by Bart Massey, is maybe the best for
+getting a small hint of what you can do with the elements you got when you're
+really stuck.
+
 
 License
 -------
