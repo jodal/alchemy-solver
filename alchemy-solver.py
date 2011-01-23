@@ -33,13 +33,16 @@ class Solution(object):
         with open(filename) as filehandle:
             return fromstring(filehandle.read())
 
-    def process_command(self, command):
+    def process_command(self, argv):
+        command = argv[1];
         if command == '--full':
             self.save_full_graph()
         elif command == '--all':
             self.save_full_graph()
             for element in self.elements:
                 self.save_element_graph(element)
+        elif command == '--from':
+            self.save_derived_element_graph(argv[2])
         else:
             self.save_element_graph(command)
 
@@ -50,6 +53,14 @@ class Solution(object):
         filename = 'solutions/%s.png' % (
             element.replace(' ', '_').replace('!', ''))
         graph = self._get_predecessor_graph(element)
+        graph.get_node(element).attr['color'] = 'green'
+        self._save_graph(graph, filename)
+        graph.get_node(element).attr['color'] = 'lightblue2'
+
+    def save_derived_element_graph(self, element):
+        filename = 'solutions/from_%s.png' % (
+            element.replace(' ', '_').replace('!', ''))
+        graph = self._get_successor_graph(element)
         graph.get_node(element).attr['color'] = 'green'
         self._save_graph(graph, filename)
         graph.get_node(element).attr['color'] = 'lightblue2'
@@ -73,11 +84,24 @@ class Solution(object):
             nodes_to_visit.extend(self.graph.predecessors(child))
         return self.graph.subgraph(nbunch=nodes)
 
+    def _get_successor_graph(self, element):
+        try:
+            target = self.graph.get_node(element)
+        except KeyError:
+            sys.exit('Element "%s" not found' % element)
+        nodes = [target]
+        nodes_to_visit = self.graph.successors(target)
+        nodes.extend(nodes_to_visit);
+        for product in nodes_to_visit:
+            nodes.extend(self.graph.predecessors(product))
+            nodes.extend(self.graph.successors(product))
+        return self.graph.subgraph(nbunch=nodes)
+
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        sys.exit('Usage: %s ( --full | --all | ELEMENT )' % sys.argv[0])
+    if len(sys.argv) < 2:
+        sys.exit('Usage: %s [ --full | --all | --from ELEMENT | ELEMENT ]' % sys.argv[0])
 
     solution = Solution()
     solution.add_elements('input/en_us.xml')
     solution.add_relations('input/library.xml')
-    solution.process_command(sys.argv[1])
+    solution.process_command(sys.argv)
