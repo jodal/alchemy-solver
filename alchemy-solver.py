@@ -50,7 +50,10 @@ class Solution(object):
             for element in self.elements:
                 self.save_element_graph(element)
                 self.save_derived_element_graph(element);
+                self.save_deriving_element_graph(element);
         elif command == '--from':
+            self.save_derived_element_graph(argv[2])
+        elif command == '--to':
             self.save_derived_element_graph(argv[2])
         else:
             self.save_element_graph(command)
@@ -58,21 +61,24 @@ class Solution(object):
     def save_full_graph(self):
         self._save_graph(self.graph, 'solutions/FULL.png')
 
-    def save_element_graph(self, element):
-        filename = 'solutions/%s.png' % (
-            element.replace(' ', '_').replace('!', ''))
-        graph = self._get_predecessor_graph(element)
+    def _process_graph(self, prefix, element, graph):
+        filename = 'solutions/%s%s.png' % (
+            prefix, element.replace(' ', '_').replace('!', ''))
         graph.get_node(element).attr['color'] = 'green'
         self._save_graph(graph, filename)
         graph.get_node(element).attr['color'] = 'lightblue2'
 
+    def save_element_graph(self, element):
+        graph = self._get_predecessor_graph(element)
+        self._process_graph('', element, graph)
+
     def save_derived_element_graph(self, element):
-        filename = 'solutions/from_%s.png' % (
-            element.replace(' ', '_').replace('!', ''))
         graph = self._get_successor_graph(element)
-        graph.get_node(element).attr['color'] = 'green'
-        self._save_graph(graph, filename)
-        graph.get_node(element).attr['color'] = 'lightblue2'
+        self._process_graph('from_', element, graph)
+
+    def save_deriving_element_graph(self, element):
+        graph = self._get_immediate_predecessor_graph(element)
+        self._process_graph('to_', element, graph)
 
     def _save_graph(self, graph, filename):
         graph.draw(filename, prog='dot')
@@ -106,9 +112,23 @@ class Solution(object):
             nodes.extend(self.graph.successors(product))
         return self.graph.subgraph(nbunch=nodes)
 
+    def _get_immediate_predecessor_graph(self, element):
+        try:
+            target = self.graph.get_node(element)
+        except KeyError:
+            sys.exit('Element "%s" not found' % element)
+        nodes = [target]
+        parents = self.graph.predecessors(target)
+        grandparents = []
+        for combo in parents:
+            grandparents.extend(self.graph.predecessors(combo))
+        nodes.extend(parents)
+        nodes.extend(grandparents)
+        return self.graph.subgraph(nbunch=nodes)
+
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        sys.exit('Usage: %s [ --list | --full | --all | --from ELEMENT | ELEMENT ]' % sys.argv[0])
+        sys.exit('Usage: %s [ --list | --full | --all | --from ELEMENT | --to ELEMENT | ELEMENT ]' % sys.argv[0])
 
     solution = Solution()
     solution.add_elements('input/en_us.xml')
