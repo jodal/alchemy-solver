@@ -35,7 +35,15 @@ class Solution(object):
 
     def process_command(self, argv):
         command = argv[1];
-        if command == '--full':
+        if command == '--list':
+            all = ['water', 'fire', 'earth', 'air']
+            derived = sorted(self.elements)
+            for element in all:
+                derived.remove(element)
+            all.extend(derived)
+            for element in all:
+                print '%s' % element
+        elif command == '--full':
             self.save_full_graph()
         elif command == '--all':
             self.save_full_graph()
@@ -99,7 +107,7 @@ class Solution(object):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        sys.exit('Usage: %s [ --full | --all | --from ELEMENT | ELEMENT ]' % sys.argv[0])
+        sys.exit('Usage: %s [ --list | --full | --all | --from ELEMENT | ELEMENT ]' % sys.argv[0])
 
     solution = Solution()
     solution.add_elements('input/en_us.xml')
