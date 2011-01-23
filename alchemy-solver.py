@@ -49,6 +49,7 @@ class Solution(object):
             self.save_full_graph()
             for element in self.elements:
                 self.save_element_graph(element)
+                self.save_derived_element_graph(element);
         elif command == '--from':
             self.save_derived_element_graph(argv[2])
         else:
