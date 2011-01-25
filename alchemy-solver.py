@@ -34,7 +34,7 @@ class Solution(object):
             return fromstring(filehandle.read())
 
     def process_command(self, argv):
-        command = argv[1];
+        command = argv[1]
         if command == '--list':
             basic = ['water', 'fire', 'earth', 'air']
             derived = sorted(self.elements)
@@ -48,8 +48,8 @@ class Solution(object):
             self.save_full_graph()
             for element in self.elements:
                 self.save_element_graph(element)
-                self.save_derived_element_graph(element);
-                self.save_deriving_element_graph(element);
+                self.save_derived_element_graph(element)
+                self.save_deriving_element_graph(element)
         elif command == '--from':
             self.save_derived_element_graph(argv[2])
         elif command == '--to':
@@ -105,7 +105,7 @@ class Solution(object):
             sys.exit('Element "%s" not found' % element)
         nodes = [target]
         nodes_to_visit = self.graph.successors(target)
-        nodes.extend(nodes_to_visit);
+        nodes.extend(nodes_to_visit)
         for product in nodes_to_visit:
             nodes.extend(self.graph.predecessors(product))
             nodes.extend(self.graph.successors(product))
