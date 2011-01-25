@@ -36,13 +36,12 @@ class Solution(object):
     def process_command(self, argv):
         command = argv[1];
         if command == '--list':
-            all = ['water', 'fire', 'earth', 'air']
+            basic = ['water', 'fire', 'earth', 'air']
             derived = sorted(self.elements)
-            for element in all:
+            for element in basic:
                 derived.remove(element)
-            all.extend(derived)
-            for element in all:
-                print '%s' % element
+            for element in basic + derived:
+                print element
         elif command == '--full':
             self.save_full_graph()
         elif command == '--all':
