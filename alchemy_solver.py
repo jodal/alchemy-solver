@@ -73,12 +73,12 @@ class AlchemySolver(object):
 
     def _save_full_element_graph(self, element):
         for element in self._get_elements(element):
-            graph = self._get_predecessor_graph(element)
+            graph = self._get_all_predecessors_graph(element)
             yield self._process_graph('full_', element, graph)
 
     def _save_derived_element_graph(self, element):
         for element in self._get_elements(element):
-            graph = self._get_successor_graph(element)
+            graph = self._get_immediate_successor_graph(element)
             yield self._process_graph('from_', element, graph)
 
     def _save_deriving_element_graph(self, element):
@@ -98,39 +98,20 @@ class AlchemySolver(object):
         graph.draw(filename, prog='dot')
         return '%s generated' % filename
 
-    def _get_predecessor_graph(self, element):
-        try:
-            child = self.graph.get_node(element)
-        except KeyError:
-            sys.exit('Element "%s" not found' % element)
+    def _get_all_predecessors_graph(self, element):
+        target = self.graph.get_node(element)
         nodes = []
-        nodes_to_visit = [child]
+        nodes_to_visit = [target]
         while nodes_to_visit:
-            child = nodes_to_visit.pop(0)
-            if child in nodes:
+            node = nodes_to_visit.pop(0)
+            if node in nodes:
                 continue
-            nodes.append(child)
-            nodes_to_visit.extend(self.graph.predecessors(child))
-        return self.graph.subgraph(nbunch=nodes)
-
-    def _get_successor_graph(self, element):
-        try:
-            target = self.graph.get_node(element)
-        except KeyError:
-            sys.exit('Element "%s" not found' % element)
-        nodes = [target]
-        nodes_to_visit = self.graph.successors(target)
-        nodes.extend(nodes_to_visit)
-        for product in nodes_to_visit:
-            nodes.extend(self.graph.predecessors(product))
-            nodes.extend(self.graph.successors(product))
+            nodes.append(node)
+            nodes_to_visit.extend(self.graph.predecessors(node))
         return self.graph.subgraph(nbunch=nodes)
 
     def _get_immediate_predecessor_graph(self, element):
-        try:
-            target = self.graph.get_node(element)
-        except KeyError:
-            sys.exit('Element "%s" not found' % element)
+        target = self.graph.get_node(element)
         nodes = [target]
         parents = self.graph.predecessors(target)
         grandparents = []
@@ -138,6 +119,16 @@ class AlchemySolver(object):
             grandparents.extend(self.graph.predecessors(combo))
         nodes.extend(parents)
         nodes.extend(grandparents)
+        return self.graph.subgraph(nbunch=nodes)
+
+    def _get_immediate_successor_graph(self, element):
+        target = self.graph.get_node(element)
+        nodes = [target]
+        products = self.graph.successors(target)
+        nodes.extend(products)
+        for product in products:
+            nodes.extend(self.graph.predecessors(product))
+            nodes.extend(self.graph.successors(product))
         return self.graph.subgraph(nbunch=nodes)
 
 def get_usage():
