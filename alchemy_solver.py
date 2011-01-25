@@ -4,7 +4,7 @@ from lxml.etree import fromstring
 import pygraphviz
 import sys
 
-class Solution(object):
+class AlchemySolver(object):
     def __init__(self):
         self.graph = pygraphviz.AGraph(directed=True)
         self.id_to_name = {}
@@ -151,7 +151,7 @@ if __name__ == '__main__':
     if len(sys.argv) not in (2, 3):
         sys.exit(get_usage())
 
-    solution = Solution()
-    solution.add_elements('input/en_us.xml')
-    solution.add_relations('input/library.xml')
-    print solution.process_command(*sys.argv[1:3])
+    alchemy_solver = AlchemySolver()
+    alchemy_solver.add_elements('input/en_us.xml')
+    alchemy_solver.add_relations('input/library.xml')
+    print alchemy_solver.process_command(*sys.argv[1:3])
