@@ -33,55 +33,70 @@ class Solution(object):
         with open(filename) as filehandle:
             return fromstring(filehandle.read())
 
-    def process_command(self, argv):
-        command = argv[1]
+    def process_command(self, command, element=None):
         if command == '--list':
-            basic = ['water', 'fire', 'earth', 'air']
-            derived = sorted(self.elements)
-            for element in basic:
-                derived.remove(element)
-            for element in basic + derived:
-                print element
-        elif command == '--full':
-            self.save_full_graph()
-        elif command == '--all':
-            self.save_full_graph()
-            for element in self.elements:
-                self.save_element_graph(element)
-                self.save_derived_element_graph(element)
-                self.save_deriving_element_graph(element)
-        elif command == '--from':
-            self.save_derived_element_graph(argv[2])
-        elif command == '--to':
-            self.save_derived_element_graph(argv[2])
+            return '\n'.join(self._get_element_list())
+        elif command == '--game':
+            return self._save_game_graph()
+        elif command in ('--full', '--from', '--to'):
+            if element is None:
+                sys.exit('Error: Missing element name or "all"\n%s' % (
+                    get_usage()))
+            elif element not in self.elements + ['all']:
+                sys.exit('Error: Unknown element name "%s"\n%s' % (
+                    element, get_usage()))
+            elif command == '--full':
+                return '\n'.join(self._save_full_element_graph(element))
+            elif command == '--from':
+                return '\n'.join(self._save_derived_element_graph(element))
+            elif command == '--to':
+                return '\n'.join(self._save_deriving_element_graph(element))
         else:
-            self.save_element_graph(command)
+            sys.exit('Error: Unknown command "%s"\n%s' % (
+                command, get_usage()))
 
-    def save_full_graph(self):
-        self._save_graph(self.graph, 'solutions/FULL.png')
+    def _get_element_list(self):
+        basic = ['water', 'fire', 'earth', 'air']
+        derived = sorted(self.elements)
+        for element in basic:
+            derived.remove(element)
+        return basic + derived
+
+    def _save_game_graph(self):
+        return self._save_graph(self.graph, 'solutions/game.png')
+
+    def _get_elements(self, element):
+        if element == 'all':
+            return self.elements
+        else:
+            return [element]
+
+    def _save_full_element_graph(self, element):
+        for element in self._get_elements(element):
+            graph = self._get_predecessor_graph(element)
+            yield self._process_graph('full_', element, graph)
+
+    def _save_derived_element_graph(self, element):
+        for element in self._get_elements(element):
+            graph = self._get_successor_graph(element)
+            yield self._process_graph('from_', element, graph)
+
+    def _save_deriving_element_graph(self, element):
+        for element in self._get_elements(element):
+            graph = self._get_immediate_predecessor_graph(element)
+            yield self._process_graph('to_', element, graph)
 
     def _process_graph(self, prefix, element, graph):
         filename = 'solutions/%s%s.png' % (
             prefix, element.replace(' ', '_').replace('!', ''))
         graph.get_node(element).attr['color'] = 'green'
-        self._save_graph(graph, filename)
+        result = self._save_graph(graph, filename)
         graph.get_node(element).attr['color'] = 'lightblue2'
-
-    def save_element_graph(self, element):
-        graph = self._get_predecessor_graph(element)
-        self._process_graph('', element, graph)
-
-    def save_derived_element_graph(self, element):
-        graph = self._get_successor_graph(element)
-        self._process_graph('from_', element, graph)
-
-    def save_deriving_element_graph(self, element):
-        graph = self._get_immediate_predecessor_graph(element)
-        self._process_graph('to_', element, graph)
+        return result
 
     def _save_graph(self, graph, filename):
         graph.draw(filename, prog='dot')
-        print '%s generated' % filename
+        return '%s generated' % filename
 
     def _get_predecessor_graph(self, element):
         try:
@@ -125,11 +140,18 @@ class Solution(object):
         nodes.extend(grandparents)
         return self.graph.subgraph(nbunch=nodes)
 
+def get_usage():
+    return """
+Usage:
+    %(c)s ( --list | --game )
+    %(c)s ( --full | --from | --to ) ( ELEMENT | all )
+    """.strip() % {'c': sys.argv[0]}
+
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        sys.exit('Usage: %s [ --list | --full | --all | --from ELEMENT | --to ELEMENT | ELEMENT ]' % sys.argv[0])
+    if len(sys.argv) not in (2, 3):
+        sys.exit(get_usage())
 
     solution = Solution()
     solution.add_elements('input/en_us.xml')
     solution.add_relations('input/library.xml')
-    solution.process_command(sys.argv)
+    print solution.process_command(*sys.argv[1:3])

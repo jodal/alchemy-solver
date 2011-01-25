@@ -11,26 +11,33 @@ Usage
 
 The program requires Python, python-lxml, and python-pygraphviz to run.
 
+To list all known elements::
+
+    python alchemy-solver.py --list
+
 To create a PNG file showing the complete solution of the game::
 
-    python alchemy-solver.py --full
+    python alchemy-solver.py --game
 
-To create a PNG file showing the solution of a single element, provide the
-element name, e.g. ``isle``::
+To create a PNG file showing the full solution of a single element, e.g.
+``isle``::
 
-    python alchemy-solver.py isle
+    python alchemy-solver.py --full isle
 
-To create PNG files for both the full solution and all elements::
+To create a PNG file showing all the elements that can be made from a single
+element, e.g. ``water``, in one step::
 
-    python alchemy-solver.py --all
+    python alchemy-solver.py --from water
 
-To create a PNG file showing what can be created given a single element::
+To create a PNG file showing just the last step of construction of a single
+element, e.g. ``steam``::
 
-    python alchemy-solver.py --from wood
+    python alchemy-solver.py --to steam
 
-The ``--from`` option, contributed by Bart Massey, is maybe the best for
-getting a small hint of what you can do with the elements you got when you're
-really stuck.
+The three last commands will create solutions for all elements if given the
+argument ``all`` instead of an element name.
+
+Generated PNG files will be placed in the ``solutions/`` directory.
 
 
 License
